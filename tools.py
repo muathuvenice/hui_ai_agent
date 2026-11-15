@@ -25,12 +25,14 @@ def fetch_snowtrace_profile(wallet_address: str, use_mock: bool = False) -> OnCh
 
     if use_mock or wallet_address.startswith("0xMock"):
         if "New" in wallet_address or wallet_address.endswith("000"):
+            # Return a mock response indicating no transactions found for the wallet
             res = OnChainMetrics(
                 wallet_address=wallet_address, tx_count=0, wallet_age_days=0.0,
                 balance_avax=0.0, unique_counterparties=0, success_rate=0.0,
                 sybil_risk_flag=False, data_status="insufficient_data"
             )
         elif "Sybil" in wallet_address:
+            # Return a mock response indicating potential sybil behavior detected for the wallet
             res = OnChainMetrics(
                 wallet_address=wallet_address, tx_count=45, wallet_age_days=1.5,
                 balance_avax=0.2, unique_counterparties=1, success_rate=0.95,
