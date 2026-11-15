@@ -15,6 +15,11 @@ def compute_5_component_score(
     if onchain.data_status in ("insufficient_data", "api_error") and onchain.tx_count == 0:
         onchain_pts = 0.0
     else:
+        # ln(1 + x) / ln(1 + max_x) is used instead of the normal ratio (x / max_x) 
+        # the logarithmic curve rises quickly for small values of x and then flattens out for larger values
+        # Moving from 0 to 10 genuine transactions yields a rapid score boost, rewarding students who begin using their wallets
+        # Moving from 40 to 50 transactions adds only a modest marginal gain as it approaches the cap
+        # This sharply distinguishes between brand-new wallets from genuinely active users while neutralizing transaction-spamming attacks
         age_norm = min(1.0, math.log1p(onchain.wallet_age_days) / math.log1p(180.0))
         tx_norm = min(1.0, math.log1p(onchain.tx_count) / math.log1p(50.0))
         cp_norm = min(1.0, math.log1p(onchain.unique_counterparties) / math.log1p(15.0))
@@ -60,7 +65,7 @@ def compute_5_component_score(
 
     total_score = int(round(onchain_pts + hui_pts + kyc_pts + sybil_pts + cashflow_pts))
     total_score = max(0, min(1000, total_score))
-
+    # ranking thresholds: Diamond >= 800, Gold >= 650, Silver >= 500, Bronze >= 350, Unranked < 350
     if total_score >= 800:
         rank = "Diamond"
     elif total_score >= 650:

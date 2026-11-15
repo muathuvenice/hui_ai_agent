@@ -7,6 +7,7 @@ from schemas import CreditScoreResult
 
 def test_deterministic_scoring_reproducibility():
     """Task 6 & 12: Scoring the same wallet twice must return the exact same 0-1000 score."""
+    # scoreing a wallet twice should return the same breakdown, rank, and decision, and the score must be within 0-1000
     onchain = fetch_snowtrace_profile("0xMockActive_01", use_mock=True)
     kyc = verify_edu_kyc("HUST_2026_VALID")
     s1, r1, d1, _ = compute_5_component_score(onchain, kyc)
